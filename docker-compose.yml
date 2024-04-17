@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  crawler-backend:
+    build:
+      context: ./backend
+    image: crawler-backend
+    container_name: crawler-backend
+    depends_on:
+      - crawler-mongo
+    volumes:
+      - ./backend/src/:/app/src/
+      - /etc/localtime:/etc/localtime
+    ports:
+      - "8080:8080"
+    networks:
+      - crawler-network
+    environment:
+      SERVER_PORT: "8080"
+      SECRET_KEY: "secret-key"
+      DATABASE_NAME: "web_crawler"
+      DATABASE_USER: "admin"
+      DATABASE_PASS: "admin"
+      DATABASE_URI: "mongodb://crawler-mongo:27017"
+
+  crawler-mongo:
+    image: mongo:7.0
+    container_name: crawler-mongo
+    ports:
+      - 27017:27017
+    networks:
+      - crawler-network
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+
+volumes:
+  mongo-data:
+
+networks:
+  crawler-network:
