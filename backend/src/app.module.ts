@@ -1,10 +1,23 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ScheduleModule } from '@nestjs/schedule';
+import configuration from './config/configuration';
+import { MongooseConfigService } from './database/config.service';
+import { PagesModule } from './pages/pages.module';
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    MongooseModule.forRootAsync({
+      useClass: MongooseConfigService,
+    }),
+    ScheduleModule.forRoot(),
+    PagesModule,
+  ],
+  providers: [],
 })
 export class AppModule {}
