@@ -7,6 +7,7 @@ import { MongooseConfigService } from './database/config.service';
 import { WebsitesModule } from './websites/websites.module';
 import { NodesModule } from './nodes/nodes.module';
 import { ExecutionsModule } from './executions/executions.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { ExecutionsModule } from './executions/executions.module';
     WebsitesModule,
     NodesModule,
     ExecutionsModule,
+    TasksModule,
   ],
-  providers: [],
 })
 export class AppModule {}

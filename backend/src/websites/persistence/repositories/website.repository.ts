@@ -32,6 +32,9 @@ export class WebsiteRepository {
     if (query.tags?.length) {
       where.tags = { $all: query.tags };
     }
+    if (query.active) {
+      where.active = true;
+    }
 
     const websites = await this.websitesModel
       .find(where)

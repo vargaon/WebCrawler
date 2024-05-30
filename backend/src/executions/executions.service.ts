@@ -85,4 +85,22 @@ export class ExecutionsService {
 
     return executions[0];
   }
+
+  async hasPendingOrRunningExecutions(websiteId: string): Promise<boolean> {
+    const pendingExecutions = await this.executionsRepository.findMany({
+      websiteId,
+      status: ExecutionStatus.pending,
+    });
+
+    if (pendingExecutions.length > 0) {
+      return true;
+    }
+
+    const runningExecutions = await this.executionsRepository.findMany({
+      websiteId,
+      status: ExecutionStatus.running,
+    });
+
+    return runningExecutions.length > 0;
+  }
 }
