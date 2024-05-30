@@ -4,7 +4,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import configuration from './config/configuration';
 import { MongooseConfigService } from './database/config.service';
-import { PagesModule } from './pages/pages.module';
+import { WebsitesModule } from './websites/websites.module';
+import { NodesModule } from './nodes/nodes.module';
+import { ExecutionsModule } from './executions/executions.module';
 
 @Module({
   imports: [
@@ -16,7 +18,9 @@ import { PagesModule } from './pages/pages.module';
       useClass: MongooseConfigService,
     }),
     ScheduleModule.forRoot(),
-    PagesModule,
+    WebsitesModule,
+    NodesModule,
+    ExecutionsModule,
   ],
   providers: [],
 })
