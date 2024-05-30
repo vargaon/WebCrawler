@@ -44,12 +44,6 @@ export class WebsiteNode {
   valid: boolean;
 
   @ApiProperty({
-    example: '66450c9e9c5b42c1cf041a76',
-    description: 'The id of the website',
-  })
-  websiteId: string;
-
-  @ApiProperty({
     example: '66450c9e9c5b42c1cf041a75',
     description: 'The id of the execution',
   })

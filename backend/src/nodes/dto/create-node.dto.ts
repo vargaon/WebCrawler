@@ -5,6 +5,5 @@ export class CreateNodeDto {
   children: string[];
   depth: number;
   valid: boolean;
-  websiteId: string;
   executionId: string;
 }

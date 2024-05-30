@@ -11,7 +11,6 @@ export class NodeMapper {
       children: raw.children,
       depth: raw.depth,
       valid: raw.valid,
-      websiteId: raw.websiteId,
       executionId: raw.executionId,
     };
   }
@@ -25,7 +24,6 @@ export class NodeMapper {
     nodeEntity.children = node.children;
     nodeEntity.depth = node.depth;
     nodeEntity.valid = node.valid;
-    nodeEntity.websiteId = node.websiteId;
     nodeEntity.executionId = node.executionId;
 
     return nodeEntity;

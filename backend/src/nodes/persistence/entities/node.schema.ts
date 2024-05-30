@@ -25,9 +25,6 @@ export class NodeSchemaClass extends EntityDocumentHelper {
   valid: boolean;
 
   @Prop({ required: true })
-  websiteId: string;
-
-  @Prop({ required: true })
   executionId: string;
 }
 

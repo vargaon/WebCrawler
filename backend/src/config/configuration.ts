@@ -5,4 +5,8 @@ export default () => ({
     pass: process.env.DATABASE_PASS || 'secret',
     name: process.env.DATABASE_NAME || 'web_crawler',
   },
+  redis: {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: process.env.REDIS_PORT || 6379,
+  },
 });

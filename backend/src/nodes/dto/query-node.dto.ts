@@ -5,10 +5,5 @@ export class QueryNodeDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  websiteId?: string | null;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
   executionId?: string | null;
 }

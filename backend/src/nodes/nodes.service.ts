@@ -50,10 +50,10 @@ export class NodesService {
     this.nodesRepository.softDelete(id);
   }
 
-  removeByWebsiteId(websiteId: string) {
-    this.nodesRepository.findMany({ websiteId }).then((executions) => {
-      executions.forEach((execution) => {
-        this.nodesRepository.softDelete(execution.id);
+  removeByExecutionId(executionId: string) {
+    this.nodesRepository.findMany({ executionId }).then((nodes) => {
+      nodes.forEach((node) => {
+        this.nodesRepository.softDelete(node.id);
       });
     });
   }

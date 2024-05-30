@@ -19,6 +19,8 @@ services:
       DATABASE_USER: ${DB_USER}
       DATABASE_PASS: ${DB_PASS}
       DATABASE_URI: ${DB_URI}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
   db:
     image: mongo:7.0
@@ -29,6 +31,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+
+  redis:
+    image: redis:7.2.5-alpine
+    ports:
+      - 6379:6379
 
 volumes:
   mongo-data:

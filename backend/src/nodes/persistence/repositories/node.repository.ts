@@ -27,10 +27,6 @@ export class NodeRepository {
       where.executionId = query.executionId;
     }
 
-    if (query.websiteId) {
-      where.websiteId = query.websiteId;
-    }
-
     const nodes = await this.nodesModel.find(where).sort({ depth: 1 });
 
     return nodes.map((node) => NodeMapper.toDomain(node));

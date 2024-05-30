@@ -4,10 +4,17 @@ import { ExecutionRepository } from './persistence/repositories/execution.reposi
 import { QueryExecutionDto } from './dto/query-execution.dto';
 import { Execution } from './domain/execution';
 import { ExecutionStatus } from './enum/execution-status.enum';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
+import { NodesService } from 'src/nodes/nodes.service';
 
 @Injectable()
 export class ExecutionsService {
-  constructor(private readonly executionsRepository: ExecutionRepository) {}
+  constructor(
+    private readonly executionsRepository: ExecutionRepository,
+    @InjectQueue('executions') private readonly executionsQueue: Queue,
+    private readonly nodesService: NodesService,
+  ) {}
 
   create(createExecutionDto: CreateExecutionDto) {
     const clonedPayload = { ...createExecutionDto };
@@ -46,23 +53,26 @@ export class ExecutionsService {
     return updatedExecution;
   }
 
-  remove(id: string) {
-    return this.executionsRepository.softDelete(id);
-  }
-
-  createPendingExecutionForWebsite(websiteId: string) {
-    return this.create({
+  async createPendingExecutionForWebsite(websiteId: string) {
+    const createdExecution = await this.create({
       startTime: null,
       endTime: null,
       siteCount: 0,
       status: ExecutionStatus.pending,
       websiteId: websiteId,
     });
+
+    this.executionsQueue.add('execute', {
+      executionId: createdExecution.id,
+    });
+
+    return createdExecution;
   }
 
   removeByWebsiteId(websiteId: string) {
     this.executionsRepository.findMany({ websiteId }).then((executions) => {
       executions.forEach((execution) => {
+        this.nodesService.removeByExecutionId(execution.id);
         this.executionsRepository.softDelete(execution.id);
       });
     });
