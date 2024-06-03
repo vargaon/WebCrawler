@@ -9,7 +9,6 @@ export class NodeMapper {
       url: raw.url,
       crawlTime: raw.crawlTime,
       children: raw.children,
-      depth: raw.depth,
       valid: raw.valid,
       executionId: raw.executionId,
     };
@@ -22,7 +21,6 @@ export class NodeMapper {
     nodeEntity.url = node.url;
     nodeEntity.crawlTime = node.crawlTime;
     nodeEntity.children = node.children;
-    nodeEntity.depth = node.depth;
     nodeEntity.valid = node.valid;
     nodeEntity.executionId = node.executionId;
 

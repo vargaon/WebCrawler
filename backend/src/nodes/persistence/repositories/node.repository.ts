@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { NodeSchemaClass } from '../entities/node.schema';
 import { FilterQuery, Model, isValidObjectId } from 'mongoose';
@@ -8,15 +8,34 @@ import { QueryNodeDto } from 'src/nodes/dto/query-node.dto';
 
 @Injectable()
 export class NodeRepository {
+  private readonly logger = new Logger(NodeRepository.name);
+
   constructor(
     @InjectModel(NodeSchemaClass.name)
     private readonly nodesModel: Model<NodeSchemaClass>,
   ) {}
 
-  async create(data: Omit<WebsiteNode, 'id'>): Promise<WebsiteNode> {
-    const persistanceModel = NodeMapper.toPersistence(data);
-    const createdNode = new this.nodesModel(persistanceModel);
-    const nodeObject = await createdNode.save();
+  async createIfNotExist(
+    url: string,
+    executionId: string,
+    valid: boolean,
+  ): Promise<WebsiteNode> {
+    const where: FilterQuery<NodeSchemaClass> = {
+      executionId: executionId,
+      url: url,
+    };
+
+    const nodeObject = await this.nodesModel.findOneAndUpdate(
+      where,
+      { url: url, executionId: executionId, valid: valid },
+      {
+        upsert: true,
+        new: true,
+        timestamps: true,
+        setDefaultsOnInsert: true,
+      },
+    );
+
     return NodeMapper.toDomain(nodeObject);
   }
 

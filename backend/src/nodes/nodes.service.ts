@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateNodeDto } from './dto/create-node.dto';
 import { NodeRepository } from './persistence/repositories/node.repository';
 import { WebsiteNode } from './domain/node';
 import { QueryNodeDto } from './dto/query-node.dto';
@@ -8,12 +7,8 @@ import { QueryNodeDto } from './dto/query-node.dto';
 export class NodesService {
   constructor(private readonly nodesRepository: NodeRepository) {}
 
-  create(createNodeDto: CreateNodeDto) {
-    const clonedPayload = { ...createNodeDto };
-
-    //TODO: add validation
-
-    return this.nodesRepository.create(clonedPayload);
+  createIfNotExist(url: string, executionId: string, valid: boolean) {
+    return this.nodesRepository.createIfNotExist(url, executionId, valid);
   }
 
   findMany(query: QueryNodeDto) {

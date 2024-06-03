@@ -22,7 +22,6 @@ async function bootstrap() {
     .setTitle('Web Crawler API')
     .setDescription('Some description.')
     .setVersion('1.0')
-    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

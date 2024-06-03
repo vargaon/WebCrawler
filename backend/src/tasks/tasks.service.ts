@@ -15,36 +15,38 @@ export class TasksService {
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleCron() {
-    this.websitesService.findMany({ active: true }).then((websites) => {
-      websites.forEach((website) => {
-        this.executionsService
-          .hasPendingOrRunningExecutions(website.id)
-          .then((hasExecutions) => {
-            if (!hasExecutions) {
-              this.executionsService
-                .findLatestCompletedExecutionByWebsiteId(website.id)
-                .then((latestExecution) => {
-                  if (
-                    !latestExecution ||
-                    (latestExecution.endTime &&
-                      latestExecution.endTime.getTime() +
-                        getMilliseconds(
-                          website.periodicity.unit,
-                          website.periodicity.value,
-                        ) <=
-                        Date.now())
-                  ) {
-                    this.logger.debug(
-                      `Creating execution for website ${website.label} (${website.url})`,
-                    );
-                    this.executionsService.createPendingExecutionForWebsite(
-                      website.id,
-                    );
-                  }
-                });
-            }
-          });
+    this.websitesService
+      .findMany({ limit: 0, active: true })
+      .then((websites) => {
+        websites.forEach((website) => {
+          this.executionsService
+            .hasPendingOrRunningExecutions(website.id)
+            .then((hasExecutions) => {
+              if (!hasExecutions) {
+                this.executionsService
+                  .findLatestCompletedExecutionByWebsiteId(website.id)
+                  .then((latestExecution) => {
+                    if (
+                      !latestExecution ||
+                      (latestExecution.endTime &&
+                        latestExecution.endTime.getTime() +
+                          getMilliseconds(
+                            website.periodicity.unit,
+                            website.periodicity.value,
+                          ) <=
+                          Date.now())
+                    ) {
+                      this.logger.debug(
+                        `Creating execution task for website ${website.id} (${website.label})`,
+                      );
+                      this.executionsService.createPendingExecutionForWebsite(
+                        website.id,
+                      );
+                    }
+                  });
+              }
+            });
+        });
       });
-    });
   }
 }

@@ -32,12 +32,6 @@ export class WebsiteNode {
   children: string[];
 
   @ApiProperty({
-    example: 0,
-    description: 'The depth of the node',
-  })
-  depth: number;
-
-  @ApiProperty({
     example: true,
     description: 'Whether the node is valid',
   })

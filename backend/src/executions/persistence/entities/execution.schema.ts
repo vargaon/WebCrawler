@@ -25,3 +25,5 @@ export class ExecutionSchemaClass extends EntityDocumentHelper {
 
 export const ExecutionSchema =
   SchemaFactory.createForClass(ExecutionSchemaClass);
+
+ExecutionSchema.index({ websiteId: 1 });

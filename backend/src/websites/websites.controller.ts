@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Query,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -28,19 +29,15 @@ import { WebsiteNode } from 'src/nodes/domain/node';
 @ApiTags('Website records')
 @Controller({ path: 'website-records', version: '1' })
 export class WebsitesController {
-  constructor(private readonly websitesService: WebsitesService) {}
+  private readonly logger = new Logger(WebsitesController.name);
 
-  @ApiCreatedResponse({ type: Website })
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  create(@Body() createPageDto: CreateWebsiteDto) {
-    return this.websitesService.create(createPageDto);
-  }
+  constructor(private readonly websitesService: WebsitesService) {}
 
   @ApiOkResponse({ type: Website, isArray: true })
   @Get()
   @HttpCode(HttpStatus.OK)
   findMany(@Query() query: QueryWebsiteDto) {
+    this.logger.debug(`Querying websites with query: ${JSON.stringify(query)}`);
     return this.websitesService.findMany(query);
   }
 
@@ -56,6 +53,16 @@ export class WebsitesController {
     }
 
     return website;
+  }
+
+  @ApiCreatedResponse({ type: Website })
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createPageDto: CreateWebsiteDto) {
+    this.logger.debug(
+      `Creating website record with data: ${JSON.stringify(createPageDto)}`,
+    );
+    return this.websitesService.create(createPageDto);
   }
 
   @ApiOkResponse({ type: Website })
@@ -75,6 +82,23 @@ export class WebsitesController {
   })
   remove(@Param('id') id: string) {
     return this.websitesService.remove(id);
+  }
+
+  @ApiOkResponse({ type: WebsiteNode, isArray: true })
+  @Get(':id/nodes')
+  @ApiParam({
+    name: 'id',
+    type: String,
+    required: true,
+  })
+  async findWebsiteNodes(@Param('id') id: string) {
+    const website = await this.websitesService.findById(id);
+
+    if (!website) {
+      throw new NotFoundException(`Website with id ${id} not found`);
+    }
+
+    return this.websitesService.findWebsiteNodes(website);
   }
 
   @ApiCreatedResponse({ type: WebsiteExecution })
@@ -99,22 +123,5 @@ export class WebsitesController {
     websiteExecution.executionId = execution.id;
 
     return websiteExecution;
-  }
-
-  @ApiOkResponse({ type: WebsiteNode, isArray: true })
-  @Get(':id/nodes')
-  @ApiParam({
-    name: 'id',
-    type: String,
-    required: true,
-  })
-  async findWebsiteNodes(@Param('id') id: string) {
-    const website = await this.websitesService.findById(id);
-
-    if (!website) {
-      throw new NotFoundException(`Website with id ${id} not found`);
-    }
-
-    return this.websitesService.findWebsiteNodes(website);
   }
 }
