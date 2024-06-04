@@ -46,7 +46,6 @@ export class CrawlingProcessor {
 
     var siteCount: number = 0;
     const nodesToProcess: WebsiteNode[] = [];
-    const processedNodeIds: string[] = [];
     const linkRe = new RegExp(website.regex);
 
     // Update execution status to running and set start time
@@ -68,7 +67,7 @@ export class CrawlingProcessor {
       const node = nodesToProcess.pop();
 
       // Skip already processed or invalid nodes
-      if (processedNodeIds.includes(node.id) || !node.valid) {
+      if (!node.valid || node.crawlTime !== null) {
         continue;
       }
 
@@ -95,15 +94,17 @@ export class CrawlingProcessor {
 
         await this.nodesService.update(node.id, node);
 
-        nodesToProcess.push(...children);
+        nodesToProcess.push(
+          ...children.filter(
+            (child) => child.valid && child.crawlTime === null,
+          ),
+        );
       } catch (error) {
         this.logger.error(`Node crawling error: ${node.url}`);
         this.logger.error(error);
 
         node.valid = false;
         await this.nodesService.update(node.id, node);
-      } finally {
-        processedNodeIds.push(node.id);
       }
     }
 
