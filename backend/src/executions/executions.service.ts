@@ -72,10 +72,14 @@ export class ExecutionsService {
   removeByWebsiteId(websiteId: string) {
     this.executionsRepository.findMany({ websiteId }).then((executions) => {
       executions.forEach((execution) => {
-        this.nodesService.removeByExecutionId(execution.id);
-        this.executionsRepository.softDelete(execution.id);
+        this.remove(execution.id);
       });
     });
+  }
+
+  remove(id: string) {
+    this.nodesService.removeByExecutionId(id);
+    this.executionsRepository.softDelete(id);
   }
 
   async findLatestCompletedExecutionByWebsiteId(

@@ -108,16 +108,6 @@ export class CrawlingProcessor {
       }
     }
 
-    // Remove previous nodes
-    const latestExecution =
-      await this.executionsService.findLatestCompletedExecutionByWebsiteId(
-        website.id,
-      );
-
-    if (latestExecution) {
-      await this.nodesService.removeByExecutionId(latestExecution.id);
-    }
-
     // Update execution status to completed and set end time
     await this.executionsService.update(execution.id, {
       status: ExecutionStatus.completed,

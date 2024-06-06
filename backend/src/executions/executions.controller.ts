@@ -6,8 +6,14 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOkResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOkResponse,
+  ApiParam,
+  ApiNoContentResponse,
+} from '@nestjs/swagger';
 import { ExecutionsService } from './executions.service';
 import { Execution } from './domain/execution';
 import { QueryExecutionDto } from './dto/query-execution.dto';
@@ -35,5 +41,13 @@ export class ExecutionsController {
     }
 
     return execution;
+  }
+
+  @ApiNoContentResponse()
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiParam({ name: 'id', type: String, required: true })
+  async deleteById(@Param('id') id: string) {
+    this.executionsService.remove(id);
   }
 }
