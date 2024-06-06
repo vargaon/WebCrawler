@@ -21,7 +21,7 @@ export class CrawlingProcessor {
   ) {}
 
   @Process('execute')
-  async handleTranscode(job: Job) {
+  async handleExecution(job: Job) {
     const execution = await this.executionsService.findById(
       job.data.executionId,
     );
@@ -48,10 +48,18 @@ export class CrawlingProcessor {
     const nodesToProcess: WebsiteNode[] = [];
     const linkRe = new RegExp(website.regex);
 
+    const startCrawlingTime = new Date();
+
+    // Update website last crawl time and status
+    await this.websitesService.update(website.id, {
+      lastCrawlTime: startCrawlingTime,
+      lastCrawlStatus: ExecutionStatus.running,
+    });
+
     // Update execution status to running and set start time
     await this.executionsService.update(execution.id, {
       status: ExecutionStatus.running,
-      startTime: new Date(),
+      startTime: startCrawlingTime,
     });
 
     // Create root unprocessed node
@@ -113,6 +121,11 @@ export class CrawlingProcessor {
       status: ExecutionStatus.completed,
       endTime: new Date(),
       siteCount: siteCount,
+    });
+
+    // Update website last crawl status
+    await this.websitesService.update(website.id, {
+      lastCrawlStatus: ExecutionStatus.completed,
     });
 
     this.logger.debug(

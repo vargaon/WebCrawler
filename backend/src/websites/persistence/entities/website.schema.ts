@@ -33,6 +33,12 @@ export class WebsiteSchemaClass extends EntityDocumentHelper {
 
   @Prop({ default: true })
   active: boolean;
+
+  @Prop({ default: null })
+  lastCrawlTime: Date;
+
+  @Prop({ default: null })
+  lastCrawlStatus: string;
 }
 
 export const WebsiteSchema = SchemaFactory.createForClass(WebsiteSchemaClass);

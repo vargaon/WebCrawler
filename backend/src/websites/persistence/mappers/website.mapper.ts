@@ -14,6 +14,8 @@ export class WebsiteMapper {
         unit: raw.periodicity.unit,
       },
       active: raw.active,
+      lastCrawlTime: raw.lastCrawlTime,
+      lastCrawlStatus: raw.lastCrawlStatus,
     };
   }
 
@@ -29,6 +31,8 @@ export class WebsiteMapper {
       unit: website.periodicity.unit,
     };
     websiteEntity.active = website.active;
+    websiteEntity.lastCrawlTime = website.lastCrawlTime;
+    websiteEntity.lastCrawlStatus = website.lastCrawlStatus;
 
     return websiteEntity;
   }

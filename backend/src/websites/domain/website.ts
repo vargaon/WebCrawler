@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { TimeUnit } from 'src/common/enum/time-unit.enum';
 
 export class Periodicity {
@@ -48,4 +48,16 @@ export class Website {
     description: 'The status of the website',
   })
   active: boolean;
+
+  @ApiPropertyOptional({
+    example: '2021-10-14T15:00:00.000Z',
+    description: 'The last time the website was crawled',
+  })
+  lastCrawlTime?: Date | null;
+
+  @ApiPropertyOptional({
+    example: 'completed',
+    description: 'The last status of the website crawling',
+  })
+  lastCrawlStatus?: string | null;
 }

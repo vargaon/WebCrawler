@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class WebsiteNode {
   @ApiProperty({
@@ -7,7 +7,7 @@ export class WebsiteNode {
   })
   id: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'Google',
     description: 'The title of the node',
   })
@@ -19,7 +19,7 @@ export class WebsiteNode {
   })
   url: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 42,
     description: 'The time it took to crawl the node in seconds',
   })
