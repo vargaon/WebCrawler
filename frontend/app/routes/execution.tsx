@@ -9,10 +9,10 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div className="row align-items-center" style={{ height: "50vh", fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <div className="col-1 d-flex justify-content-center mx-auto">
-        <h1>WebCrawler</h1>
-      </div>
+    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
+      <h1>Browse executions</h1>
+      <p><strong className="text-danger">Not implemented</strong></p>
+      <p>Executions will be displayed here</p>
     </div>
   );
 }

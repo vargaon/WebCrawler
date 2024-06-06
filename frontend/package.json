@@ -13,7 +13,9 @@
   "dependencies": {
     "@remix-run/node": "^2.9.2",
     "@remix-run/react": "^2.9.2",
+    "bootstrap": "^5.3.3",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.10.2",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
