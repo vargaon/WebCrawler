@@ -11,7 +11,7 @@ services:
       - ./backend/src/:/app/src/
       - /etc/localtime:/etc/localtime
     ports:
-      - 8888:${SERVER_PORT}
+      - 8080:${SERVER_PORT}
     environment:
       SERVER_PORT: ${SERVER_PORT}
       SECRET_KEY: ${SECRET_KEY}
@@ -19,6 +19,8 @@ services:
       DATABASE_USER: ${DB_USER}
       DATABASE_PASS: ${DB_PASS}
       DATABASE_URI: ${DB_URI}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
 
   db:
     image: mongo:7.0
@@ -29,6 +31,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+
+  redis:
+    image: redis:7.2.5-alpine
+    ports:
+      - 6379:6379
 
 volumes:
   mongo-data:

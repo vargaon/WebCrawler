@@ -4,7 +4,17 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import configuration from './config/configuration';
 import { MongooseConfigService } from './database/config.service';
-import { PagesModule } from './pages/pages.module';
+import { BullConfigService } from './queue/config.service';
+import { WebsitesModule } from './websites/websites.module';
+import { NodesModule } from './nodes/nodes.module';
+import { ExecutionsModule } from './executions/executions.module';
+import { TasksModule } from './tasks/tasks.module';
+import { BullModule } from '@nestjs/bull';
+import { CrawlingModule } from './crawling/crawling.module';
+import { GraphqlModule } from './graphql/graphql.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -15,9 +25,22 @@ import { PagesModule } from './pages/pages.module';
     MongooseModule.forRootAsync({
       useClass: MongooseConfigService,
     }),
+    BullModule.forRootAsync({
+      useClass: BullConfigService,
+    }),
     ScheduleModule.forRoot(),
-    PagesModule,
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      playground: true,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      introspection: true,
+    }),
+    WebsitesModule,
+    NodesModule,
+    ExecutionsModule,
+    TasksModule,
+    CrawlingModule,
+    GraphqlModule,
   ],
-  providers: [],
 })
 export class AppModule {}

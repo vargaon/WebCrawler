@@ -14,7 +14,26 @@ async function bootstrap() {
   app.enableCors({ origin: '*' });
   app.useGlobalPipes(new ValidationPipe({}));
   app.enableVersioning({ type: VersioningType.URI });
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginEmbedderPolicy: false,
+      contentSecurityPolicy: {
+        directives: {
+          imgSrc: [
+            `'self'`,
+            'data:',
+            'apollo-server-landing-page.cdn.apollographql.com',
+          ],
+          scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+          manifestSrc: [
+            `'self'`,
+            'apollo-server-landing-page.cdn.apollographql.com',
+          ],
+          frameSrc: [`'self'`, 'sandbox.embed.apollographql.com'],
+        },
+      },
+    }),
+  );
   app.use(compression());
   app.setGlobalPrefix('api');
 
@@ -22,7 +41,6 @@ async function bootstrap() {
     .setTitle('Web Crawler API')
     .setDescription('Some description.')
     .setVersion('1.0')
-    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
