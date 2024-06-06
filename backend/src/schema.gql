@@ -1,0 +1,25 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type WebPage {
+  identifier: ID!
+  label: String!
+  url: String!
+  regex: String!
+  tags: [String!]!
+  active: Boolean!
+}
+
+type Node {
+  title: String
+  url: String!
+  crawlTime: String
+  links: [Node!]!
+  owner: WebPage!
+}
+
+type Query {
+  websites: [WebPage!]!
+  nodes(webPages: [ID!]!): [Node!]!
+}

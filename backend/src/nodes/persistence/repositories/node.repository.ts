@@ -60,6 +60,18 @@ export class NodeRepository {
     return null;
   }
 
+  async findByUrlAndExecutionId(
+    url: string,
+    executionId: string,
+  ): Promise<WebsiteNode | null> {
+    const node = await this.nodesModel.findOne({
+      url: url,
+      executionId: executionId,
+    });
+
+    return node ? NodeMapper.toDomain(node) : null;
+  }
+
   async update(
     id: string,
     payload: Partial<WebsiteNode>,

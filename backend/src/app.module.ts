@@ -11,6 +11,10 @@ import { ExecutionsModule } from './executions/executions.module';
 import { TasksModule } from './tasks/tasks.module';
 import { BullModule } from '@nestjs/bull';
 import { CrawlingModule } from './crawling/crawling.module';
+import { GraphqlModule } from './graphql/graphql.module';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -25,11 +29,18 @@ import { CrawlingModule } from './crawling/crawling.module';
       useClass: BullConfigService,
     }),
     ScheduleModule.forRoot(),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      playground: true,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      introspection: true,
+    }),
     WebsitesModule,
     NodesModule,
     ExecutionsModule,
     TasksModule,
     CrawlingModule,
+    GraphqlModule,
   ],
 })
 export class AppModule {}

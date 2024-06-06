@@ -5,6 +5,7 @@ import { Website } from './domain/website';
 import { QueryWebsiteDto } from './dto/query-website.dto';
 import { ExecutionsService } from 'src/executions/executions.service';
 import { NodesService } from 'src/nodes/nodes.service';
+import { WebsiteNode } from 'src/nodes/domain/node';
 
 @Injectable()
 export class WebsitesService {
@@ -62,18 +63,25 @@ export class WebsitesService {
     return this.executionsService.createPendingExecutionForWebsite(website.id);
   }
 
-  async findWebsiteNodes(website: Website) {
+  async findWebsiteRootNode(websiteId: string): Promise<WebsiteNode | null> {
+    const website = await this.findById(websiteId);
+
+    if (!website) {
+      return null;
+    }
+
     const latestCompletedExecution =
       await this.executionsService.findLatestCompletedExecutionByWebsiteId(
         website.id,
       );
 
     if (!latestCompletedExecution) {
-      return [];
+      return null;
     }
 
-    return this.nodesService.findMany({
-      executionId: latestCompletedExecution.id,
-    });
+    return this.nodesService.findByUrlAndExecutionId(
+      website.url,
+      latestCompletedExecution.id,
+    );
   }
 }

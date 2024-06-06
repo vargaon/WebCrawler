@@ -85,20 +85,20 @@ export class WebsitesController {
   }
 
   @ApiOkResponse({ type: WebsiteNode, isArray: true })
-  @Get(':id/nodes')
+  @Get(':id/root-node')
   @ApiParam({
     name: 'id',
     type: String,
     required: true,
   })
-  async findWebsiteNodes(@Param('id') id: string) {
+  async findWebsiteRootNode(@Param('id') id: string) {
     const website = await this.websitesService.findById(id);
 
     if (!website) {
       throw new NotFoundException(`Website with id ${id} not found`);
     }
 
-    return this.websitesService.findWebsiteNodes(website);
+    return this.websitesService.findWebsiteRootNode(website.id);
   }
 
   @ApiCreatedResponse({ type: WebsiteExecution })

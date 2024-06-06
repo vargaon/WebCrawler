@@ -19,6 +19,10 @@ export class NodesService {
     return this.nodesRepository.findById(id);
   }
 
+  findByUrlAndExecutionId(url: string, executionId: string) {
+    return this.nodesRepository.findByUrlAndExecutionId(url, executionId);
+  }
+
   update(id: string, body: Partial<WebsiteNode>): Promise<WebsiteNode> {
     const clonedPayload = { ...body };
 
