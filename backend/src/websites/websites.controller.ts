@@ -24,7 +24,7 @@ import { UpdateWebsiteDto } from './dto/update-website.dto';
 import { QueryWebsiteDto } from './dto/query-website.dto';
 import { Website } from './domain/website';
 import { WebsiteExecution } from './domain/website-execution';
-import { WebsiteNode } from 'src/nodes/domain/node';
+import { WebsiteRootNode } from './domain/website-root-node';
 
 @ApiTags('Website records')
 @Controller({ path: 'website-records', version: '1' })
@@ -84,7 +84,7 @@ export class WebsitesController {
     return this.websitesService.remove(id);
   }
 
-  @ApiOkResponse({ type: WebsiteNode, isArray: true })
+  @ApiOkResponse({ type: WebsiteRootNode, isArray: true })
   @Get(':id/root-node')
   @ApiParam({
     name: 'id',
@@ -98,7 +98,18 @@ export class WebsitesController {
       throw new NotFoundException(`Website with id ${id} not found`);
     }
 
-    return this.websitesService.findWebsiteRootNode(website.id);
+    const rootNode = await this.websitesService.findWebsiteRootNode(website.id);
+
+    if (!rootNode) {
+      throw new NotFoundException(
+        `Root node for website with id ${id} not found`,
+      );
+    }
+
+    const websiteRootNode = new WebsiteRootNode();
+    websiteRootNode.nodeId = rootNode.id;
+
+    return websiteRootNode;
   }
 
   @ApiCreatedResponse({ type: WebsiteExecution })
