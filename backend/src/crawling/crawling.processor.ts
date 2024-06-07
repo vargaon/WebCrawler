@@ -146,6 +146,18 @@ export class CrawlingProcessor {
       links.add($(link).attr('href'));
     });
 
-    return { title, links: Array.from(links) };
+    const linksArray = Array.from(links).map((link) => {
+      if (this.isRelativeUrl(link)) {
+        return url + link.replace(/^\./, '');
+      }
+      return link;
+    });
+
+    return { title, links: linksArray.filter((link) => Boolean(link)) };
+  }
+
+  isRelativeUrl(url: string) {
+    const pattern = new RegExp('^(/|./)', 'i');
+    return pattern.test(url);
   }
 }
