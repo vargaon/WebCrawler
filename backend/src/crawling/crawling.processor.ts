@@ -5,10 +5,9 @@ import { ExecutionsService } from 'src/executions/executions.service';
 import { ExecutionStatus } from 'src/executions/enum/execution-status.enum';
 import { NodesService } from 'src/nodes/nodes.service';
 import { WebsitesService } from 'src/websites/websites.service';
-import { WebsiteNode } from 'src/nodes/domain/node';
-
-const axios = require('axios');
-const cheerio = require('cheerio');
+import { WorkerPool } from './worker-pool';
+import { WorkerTask } from './worker-task.interface';
+import { ConfigService } from '@nestjs/config';
 
 @Processor('executions')
 export class CrawlingProcessor {
@@ -18,6 +17,7 @@ export class CrawlingProcessor {
     private readonly websitesService: WebsitesService,
     private readonly executionsService: ExecutionsService,
     private readonly nodesService: NodesService,
+    private readonly configService: ConfigService,
   ) {}
 
   @Process('execute')
@@ -42,12 +42,7 @@ export class CrawlingProcessor {
       `Start crawling website ${website.id} (${website.label})`,
     );
 
-    //TODO: implement crawling logic
-
-    var siteCount: number = 0;
-    const nodesToProcess: WebsiteNode[] = [];
     const linkRe = new RegExp(website.regex);
-
     const startCrawlingTime = new Date();
 
     // Update website last crawl time and status
@@ -62,65 +57,44 @@ export class CrawlingProcessor {
       startTime: startCrawlingTime,
     });
 
-    // Create root unprocessed node
-    nodesToProcess.push(
-      await this.nodesService.createIfNotExist(
-        website.url,
-        execution.id,
-        linkRe.test(website.url),
-      ),
+    const workerPool = new WorkerPool(
+      './dist/crawling/worker-script.js',
+      this.configService.get<number>('crawling.poolSize'),
+      execution.id,
+      this.nodesService,
+      linkRe,
+      this.logger,
     );
 
-    while (nodesToProcess.length > 0) {
-      const node = nodesToProcess.pop();
+    const rootNode = await this.nodesService.createIfNotExist(
+      website.url,
+      execution.id,
+      linkRe.test(website.url),
+    );
 
-      // Skip already processed or invalid nodes
-      if (!node.valid || node.crawlTime !== null) {
-        continue;
-      }
+    if (rootNode.valid) {
+      const firstTask: WorkerTask = {
+        url: rootNode.url,
+        nodeId: rootNode.id,
+      };
 
-      try {
-        const startNodeCrawlingTime = Date.now();
-        const { title, links } = await this.crawlUrl(node.url);
-        const nodeCrawlingTime = Date.now() - startNodeCrawlingTime;
+      workerPool.addTask(firstTask);
 
-        siteCount++;
-
-        const children = await Promise.all(
-          links.map(async (link) => {
-            return await this.nodesService.createIfNotExist(
-              link,
-              execution.id,
-              linkRe.test(link),
-            );
-          }),
-        );
-
-        node.title = title;
-        node.crawlTime = nodeCrawlingTime;
-        node.children = children.map((child) => child.id);
-
-        await this.nodesService.update(node.id, node);
-
-        nodesToProcess.push(
-          ...children.filter(
-            (child) => child.valid && child.crawlTime === null,
-          ),
-        );
-      } catch (error) {
-        this.logger.error(`Node crawling error: ${node.url}`);
-        this.logger.error(error);
-
-        node.valid = false;
-        await this.nodesService.update(node.id, node);
+      while (workerPool.hasPendingTasks()) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
+
+    const crawledNodes = await this.nodesService.findMany({
+      executionId: execution.id,
+      valid: true,
+    });
 
     // Update execution status to completed and set end time
     await this.executionsService.update(execution.id, {
       status: ExecutionStatus.completed,
       endTime: new Date(),
-      siteCount: siteCount,
+      siteCount: crawledNodes.length,
     });
 
     // Update website last crawl status
@@ -131,21 +105,5 @@ export class CrawlingProcessor {
     this.logger.debug(
       `Finished crawling website ${website.id} (${website.label})`,
     );
-  }
-
-  //TODO: multithreading crawling process
-  async crawlUrl(url: string) {
-    this.logger.debug(`Crawling url: ${url}`);
-    const response = await axios.get(url);
-    const $ = cheerio.load(response.data);
-
-    const title = $('title').text();
-    const links = new Set<string>();
-
-    $('a').each((i, link) => {
-      links.add($(link).attr('href'));
-    });
-
-    return { title, links: Array.from(links) };
   }
 }

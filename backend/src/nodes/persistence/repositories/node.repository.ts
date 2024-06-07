@@ -46,6 +46,10 @@ export class NodeRepository {
       where.executionId = query.executionId;
     }
 
+    if (query.valid !== null) {
+      where.valid = query.valid;
+    }
+
     const nodes = await this.nodesModel.find(where).sort({ depth: 1 });
 
     return nodes.map((node) => NodeMapper.toDomain(node));
