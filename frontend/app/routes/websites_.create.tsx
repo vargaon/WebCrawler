@@ -46,7 +46,7 @@ export const clientAction = async({
 export default function WebsiteCreate() {
     const actionData = useActionData<typeof clientAction>();
     const navigation = useNavigation();
-    const isSubmitting = navigation.formAction == "/website/create";
+    const isSubmitting = navigation.formAction == "/websites/create";
     console.log(actionData);
     const websiteStub: Website = {
         "url": "",

@@ -43,7 +43,7 @@ export function WebsiteFormFields({websiteData} : {websiteData: Website}) {
         </Row>
             
         <Row className="mb-3">
-            <Col xs={"auto"} sm={3}><Form.Label>Active</Form.Label></Col>
+            <Col xs={"auto"} sm={3}><Form.Label>Crawling active</Form.Label></Col>
             <Col><Form.Check name="active" defaultChecked={websiteData.active} /></Col>
         </Row>
         </>
