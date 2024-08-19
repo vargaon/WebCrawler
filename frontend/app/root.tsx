@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import type { NavLinkRenderProps } from "react-router-dom";
 import { Container, Nav } from "react-bootstrap";
 import bootstrapCSS from "bootstrap/dist/css/bootstrap.css?url";
 /*eslint import/no-unresolved: [0, { ignore: ["^~/"] }]*/
@@ -17,6 +18,14 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: bootstrapCSS },
   { rel: "stylesheet", href: customCSS },
 ]
+
+function navLinkClassNameCallback({isActive} : NavLinkRenderProps) {
+  const classes = ["nav-link", "active"];
+  if(isActive) {
+    classes.push("text-decoration-underline");
+  }
+  return classes.join(" ");
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -33,9 +42,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Container>
               <Nav className="">
                 <Link to="/" className="navbar-brand">WebCrawler</Link>
-                <NavLink to="/website" className="nav-link active">Websites</NavLink>
-                <NavLink to="/execution" className="nav-link active">Executions</NavLink>
-                <NavLink to="/about" className="nav-link active">About</NavLink>
+                <NavLink to="/websites" className={navLinkClassNameCallback}>Websites</NavLink>
+                <NavLink to="/executions" className={navLinkClassNameCallback}>Executions</NavLink>
+                <NavLink to="/about" className={navLinkClassNameCallback}>About</NavLink>
               </Nav>
             </Container>
           </div>
