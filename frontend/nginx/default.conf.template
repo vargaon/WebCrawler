@@ -8,5 +8,6 @@ server {
   location /api/ {
      proxy_pass ${BACKEND_URL}/api/;
   }
+  gzip on;
+  gzip_types text/css;
 }
-

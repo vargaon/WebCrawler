@@ -1,0 +1,151 @@
+@import "bootstrap/scss/functions";
+
+// Configuration
+$enable-dark-mode: false;
+$popover-max-width: 576px;
+@import "bootstrap/scss/variables";
+$theme-colors: map-remove($theme-colors, "light");
+
+@import "bootstrap/scss/mixins";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/utilities";
+
+// // Layout & components
+@import "bootstrap/scss/root";
+@import "bootstrap/scss/reboot";
+@import "bootstrap/scss/type";
+// @import "images";
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
+@import "bootstrap/scss/tables";
+@import "bootstrap/scss/forms";
+@import "bootstrap/scss/buttons";
+@import "bootstrap/scss/transitions";
+@import "bootstrap/scss/dropdown";
+@import "bootstrap/scss/button-group";
+// @import "nav";
+// @import "navbar";
+// @import "card";
+// @import "accordion";
+// @import "breadcrumb";
+@import "bootstrap/scss/pagination";
+// @import "badge";
+@import "bootstrap/scss/alert";
+// @import "progress";
+// @import "list-group";
+@import "bootstrap/scss/close";
+// @import "toasts";
+@import "bootstrap/scss/modal";
+@import "bootstrap/scss/tooltip";
+@import "bootstrap/scss/popover";
+// @import "carousel";
+@import "bootstrap/scss/spinners";
+// @import "offcanvas";
+
+// // Helpers
+@import "bootstrap/scss/helpers";
+
+// // Utilities
+@import "bootstrap/scss/utilities/api";
+
+.my-auto {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.mx-1 {
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+.my-1 {
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.py-0 {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.text-danger {
+  --bs-text-opacity: 1;
+  color: rgba(var(--bs-danger-rgb), var(--bs-text-opacity)) !important
+}
+
+// Tweak modal dialog
+.modal {
+  --bs-modal-width: auto;
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: var(--bs-modal-width);
+    margin: var(--bs-modal-margin);
+  }
+}
+
+.modal-header {
+  justify-content: space-between;
+}
+
+// Let modals show over this popover
+#node-detail-popover {
+  z-index: 11;
+}
+
+// Restrict number of lines in popover title
+// adapted from https://stackoverflow.com/questions/3922739/limit-text-length-to-n-lines-using-css
+.popover-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.popover-header > .btn-close {
+  flex-shrink: 0;
+}
+
+// Tag input component
+.rti--container {
+  padding: 0.375rem 0.75rem !important; // Bootstrap form input padding
+}
+
+.rti--container>.rti--tag>button {
+  color: #fbc5e5;
+}
+
+.rti--container>.rti--tag {
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 1px solid #212529;
+  color: #fff;
+  background-color: #212529;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.table .dropdown {
+  display: inline-block;
+}
+
+#cytoscape-container {
+  margin-bottom: 2rem;
+  border: var(--bs-border-width) solid
+}
+
+// Define height of cytoscape graph component
+// Width is set by parent .container
+#cy {
+  height: 60vh;
+  min-height: 120px;
+}
+
+#app {
+  margin-bottom: 5rem;
+}
