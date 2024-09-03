@@ -17,6 +17,11 @@ export default defineConfig(
             secure: false,
             changeOrigin: true,
           },
+          "^/graphql": {
+            target: env.API_URL + "graphql",
+            secure: false,
+            changeOrigin: true,
+          },
         },
       },
     };

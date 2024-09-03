@@ -31,7 +31,7 @@ export function NodeDetailsPopover({
 
   const newWebsiteData = {
     url: nodeData.id,
-    regex: nodeData.id.concat("/.*"),
+    regex: nodeData.id.concat("\\/.*"),
     label: "",
     tags: [],
     periodicity: {
@@ -41,15 +41,16 @@ export function NodeDetailsPopover({
     active: true,
   };
 
-  const websiteList = nodeData.owningWebsiteNodes
-    .filter((metadata) => metadata.nodeMetadata.valid)
-    .map((metadata) => {
+  const websiteList = nodeData.owningCrawlNodes
+  .filter((node) => node.crawlTime != null)
+    .filter((node, index, array) => array.findIndex(other => other.owner.identifier === node.owner.identifier) === index) // filter duplicate website records
+    .map((node) => {
       return (
-        <ListGroup.Item key={metadata.websiteMetadata.id}>
-          <h5 className="mb-1">{metadata.websiteMetadata.label}</h5>
+        <ListGroup.Item key={node.owner.identifier}>
+          <h5 className="mb-1">{node.owner.label}</h5>
           <div className="d-flex justify-content-between">
-            <small>{metadata.nodeMetadata.crawlTime?.toString()}</small>
-            <Button variant="link" onClick={() => startExecution(metadata.websiteMetadata.id)}>
+            <small>{node.crawlTime?.toString()}</small>
+            <Button variant="link" onClick={() => startExecution(node.owner.identifier)}>
               Start execution
             </Button>
           </div>
