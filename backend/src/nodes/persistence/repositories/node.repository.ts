@@ -19,6 +19,7 @@ export class NodeRepository {
     url: string,
     executionId: string,
     valid: boolean,
+    parentNodeId?: string,
   ): Promise<WebsiteNode> {
     const where: FilterQuery<NodeSchemaClass> = {
       executionId: executionId,
@@ -27,7 +28,12 @@ export class NodeRepository {
 
     const nodeObject = await this.nodesModel.findOneAndUpdate(
       where,
-      { url: url, executionId: executionId, valid: valid },
+      {
+        url: url,
+        executionId: executionId,
+        valid: valid,
+        parentNodeId: parentNodeId,
+      },
       {
         upsert: true,
         new: true,
@@ -42,15 +48,19 @@ export class NodeRepository {
   async findMany(query: QueryNodeDto): Promise<WebsiteNode[]> {
     const where: FilterQuery<NodeSchemaClass> = {};
 
-    if (query.executionId) {
+    if (query.executionId != null) {
       where.executionId = query.executionId;
     }
 
-    if (query.valid !== null) {
+    if (query.valid != null) {
       where.valid = query.valid;
     }
 
-    const nodes = await this.nodesModel.find(where).sort({ depth: 1 });
+    if (query.parentNodeId != null) {
+      where.parentNodeId = query.parentNodeId;
+    }
+
+    const nodes = await this.nodesModel.find(where);
 
     return nodes.map((node) => NodeMapper.toDomain(node));
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { WebsiteSchemaClass } from '../entities/website.schema';
 import { FilterQuery, Model, isValidObjectId } from 'mongoose';
@@ -8,14 +8,16 @@ import { QueryWebsiteDto } from 'src/websites/dto/query-website.dto';
 
 @Injectable()
 export class WebsiteRepository {
+  private readonly logger = new Logger(WebsiteRepository.name);
+
   constructor(
     @InjectModel(WebsiteSchemaClass.name)
     private readonly websitesModel: Model<WebsiteSchemaClass>,
   ) {}
 
   async create(data: Omit<Website, 'id'>): Promise<Website> {
-    const persistanceModel = WebsiteMapper.toPersistence(data);
-    const createdWebsite = new this.websitesModel(persistanceModel);
+    const persistenceModel = WebsiteMapper.toPersistence(data);
+    const createdWebsite = new this.websitesModel(persistenceModel);
     const websiteObject = await createdWebsite.save();
     return WebsiteMapper.toDomain(websiteObject);
   }
@@ -23,17 +25,17 @@ export class WebsiteRepository {
   async findMany(query: QueryWebsiteDto): Promise<Website[]> {
     const where: FilterQuery<WebsiteSchemaClass> = {};
 
-    if (query.url) {
+    if (query.url != null) {
       where.url = query.url;
     }
-    if (query.label) {
-      where.label = query.label;
+    if (query.label != null) {
+      where.label = { $regex: query.label, $options: 'i' };
     }
     if (query.tags?.length) {
       where.tags = { $all: query.tags };
     }
-    if (query.active) {
-      where.active = true;
+    if (query.active != null) {
+      where.active = query.active;
     }
 
     const websites = await this.websitesModel

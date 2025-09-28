@@ -7,8 +7,18 @@ import { QueryNodeDto } from './dto/query-node.dto';
 export class NodesService {
   constructor(private readonly nodesRepository: NodeRepository) {}
 
-  createIfNotExist(url: string, executionId: string, valid: boolean) {
-    return this.nodesRepository.createIfNotExist(url, executionId, valid);
+  createIfNotExist(
+    url: string,
+    executionId: string,
+    valid: boolean,
+    parentNodeId?: string,
+  ) {
+    return this.nodesRepository.createIfNotExist(
+      url,
+      executionId,
+      valid,
+      parentNodeId,
+    );
   }
 
   findMany(query: QueryNodeDto) {

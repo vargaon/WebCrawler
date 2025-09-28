@@ -23,6 +23,9 @@ export class NodeSchemaClass extends EntityDocumentHelper {
 
   @Prop({ required: true })
   executionId: string;
+
+  @Prop({ required: false, default: null })
+  parentNodeId?: string;
 }
 
 export const NodeSchema = SchemaFactory.createForClass(NodeSchemaClass);

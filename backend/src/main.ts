@@ -8,11 +8,13 @@ import * as compression from 'compression';
 const PORT = parseInt(process.env.SERVER_PORT, 10) || 8080;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'debug', 'error'],
+  });
 
   // register all plugins and extension
   app.enableCors({ origin: '*' });
-  app.useGlobalPipes(new ValidationPipe({}));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableVersioning({ type: VersioningType.URI });
   app.use(
     helmet({

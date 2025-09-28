@@ -21,6 +21,7 @@ services:
       DATABASE_URI: ${DB_URI}
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
+      CRAWLING_POOL_SIZE: ${CRAWLING_POOL_SIZE}
 
   db:
     image: mongo:7.0

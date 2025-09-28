@@ -19,6 +19,7 @@ export class QueryWebsiteDto {
   tags?: string[] | null;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => (value ? value === 'true' : null))
   @IsOptional()
   @IsBoolean()
   active?: boolean | null;

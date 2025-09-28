@@ -10,6 +10,6 @@ export default () => ({
     port: process.env.REDIS_PORT || 6379,
   },
   crawling: {
-    poolSize: process.env.CRAWLING_POOL_SIZE || 10,
+    poolSize: process.env.CRAWLING_POOL_SIZE || 5,
   },
 });

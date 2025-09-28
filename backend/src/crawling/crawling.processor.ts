@@ -6,19 +6,26 @@ import { ExecutionStatus } from 'src/executions/enum/execution-status.enum';
 import { NodesService } from 'src/nodes/nodes.service';
 import { WebsitesService } from 'src/websites/websites.service';
 import { WorkerPool } from './worker-pool';
-import { WorkerTask } from './worker-task.interface';
 import { ConfigService } from '@nestjs/config';
 
 @Processor('executions')
 export class CrawlingProcessor {
   private readonly logger = new Logger(CrawlingProcessor.name);
+  private workerPool: WorkerPool;
 
   constructor(
     private readonly websitesService: WebsitesService,
     private readonly executionsService: ExecutionsService,
     private readonly nodesService: NodesService,
     private readonly configService: ConfigService,
-  ) {}
+  ) {
+    this.workerPool = new WorkerPool(
+      './dist/crawling/worker-script.js',
+      this.configService.get<number>('crawling.poolSize'),
+      this.nodesService,
+      this.logger,
+    );
+  }
 
   @Process('execute')
   async handleExecution(job: Job) {
@@ -57,15 +64,6 @@ export class CrawlingProcessor {
       startTime: startCrawlingTime,
     });
 
-    const workerPool = new WorkerPool(
-      './dist/crawling/worker-script.js',
-      this.configService.get<number>('crawling.poolSize'),
-      execution.id,
-      this.nodesService,
-      linkRe,
-      this.logger,
-    );
-
     const rootNode = await this.nodesService.createIfNotExist(
       website.url,
       execution.id,
@@ -73,37 +71,41 @@ export class CrawlingProcessor {
     );
 
     if (rootNode.valid) {
-      const firstTask: WorkerTask = {
-        url: rootNode.url,
-        nodeId: rootNode.id,
-      };
-
-      workerPool.addTask(firstTask);
-
-      while (workerPool.hasPendingTasks()) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+      this.workerPool.addExecutionFirstTask(
+        {
+          url: rootNode.url,
+          nodeId: rootNode.id,
+          executionId: execution.id,
+          linkRe: linkRe,
+        },
+        this.processEndOfExecution.bind(this),
+      );
     }
+  }
 
+  private async processEndOfExecution(executionId: string) {
     const crawledNodes = await this.nodesService.findMany({
-      executionId: execution.id,
+      executionId: executionId,
       valid: true,
     });
 
     // Update execution status to completed and set end time
-    await this.executionsService.update(execution.id, {
+    await this.executionsService.update(executionId, {
       status: ExecutionStatus.completed,
       endTime: new Date(),
       siteCount: crawledNodes.length,
     });
 
     // Update website last crawl status
-    await this.websitesService.update(website.id, {
-      lastCrawlStatus: ExecutionStatus.completed,
-    });
+    const execution = await this.executionsService.findById(executionId);
+    if (execution) {
+      await this.websitesService.update(execution.websiteId, {
+        lastCrawlStatus: ExecutionStatus.completed,
+      });
+    }
 
     this.logger.debug(
-      `Finished crawling website ${website.id} (${website.label})`,
+      `Finished crawling website ${execution?.websiteId} (${execution?.id})`,
     );
   }
 }

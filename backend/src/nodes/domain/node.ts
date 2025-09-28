@@ -42,4 +42,10 @@ export class WebsiteNode {
     description: 'The id of the execution',
   })
   executionId: string;
+
+  @ApiProperty({
+    example: '66450c9e9c5b42c1cf041a75',
+    description: 'The id of the parent node',
+  })
+  parentNodeId?: string;
 }
